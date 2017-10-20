@@ -32,7 +32,7 @@ public class VideoEncoder {
 	}
 	
 	public void run() throws IOException, InterruptedException {
-		Muxer muxer = Muxer.make(file.getName(), null, null);
+		Muxer muxer = Muxer.make(file.getAbsolutePath(), null, null);
 		
 		//decide what type of codec to use to encode video. Muxers have limited sets of codecs they can use.
 		//We're going to pick the first one that works
@@ -81,6 +81,7 @@ public class VideoEncoder {
 		long currentFrame = 0;
 		while (iterator.hasNext()) {
 			Map.Entry<Rational, BufferedImage> entry = iterator.next();
+			System.out.println(entry.getKey());
 			
 			long amount = (long) Math.ceil(entry.getKey().divide(properties.getFramerate()).getDouble()
 					- prev.getKey().divide(properties.getFramerate()).getDouble())
@@ -114,6 +115,8 @@ public class VideoEncoder {
 		
 		//Finally, let's clean up after ourselves.
 		muxer.close();
+		
+		System.out.println("Done");
 	}
 	
 	/**
