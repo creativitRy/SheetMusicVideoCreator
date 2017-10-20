@@ -1,0 +1,47 @@
+buildscript {
+	repositories {
+		mavenLocal()
+		mavenCentral()
+		maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+		jcenter()
+	}
+}
+
+group 'com.gahwonlee.smvc'
+version '0.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile "net.bramp.ffmpeg:ffmpeg:$ffmpegVersion"
+	compile "org.apache.logging.log4j:log4j-api:$log4jVersion"
+	compile "org.apache.logging.log4j:log4j-core:$log4jVersion"
+	
+	testCompile "junit:junit:$junitVersion"
+}
+
+project.ext.mainClassName = "com.gahwonlee.smvc.Smvc"
+
+task run(dependsOn: classes, type: JavaExec) {
+	main = project.mainClassName
+	classpath = sourceSets.main.runtimeClasspath
+	standardInput = System.in
+}
+
+task dist(type: Jar) {
+	from files(sourceSets.main.output.classesDir)
+	from files(sourceSets.main.output.resourcesDir)
+	from { configurations.compile.collect { zipTree(it) } }
+	
+	manifest {
+		attributes 'Main-Class': project.mainClassName
+	}
+}
+
+dist.dependsOn classes

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/smvc.iml" filepath="$PROJECT_DIR$/.idea/modules/smvc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/smvc_main.iml" filepath="$PROJECT_DIR$/.idea/modules/smvc_main.iml" group="smvc" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/smvc_test.iml" filepath="$PROJECT_DIR$/.idea/modules/smvc_test.iml" group="smvc" />
+    </modules>
+  </component>
+</project>
