@@ -1,5 +1,6 @@
 package com.gahwonlee.smvc;
 
+import com.gahwonlee.smvc.utils.TimeUtils;
 import io.humble.video.*;
 import io.humble.video.awt.MediaPictureConverter;
 import io.humble.video.awt.MediaPictureConverterFactory;
@@ -14,6 +15,7 @@ import java.util.TreeMap;
 /**
  * VideoEncoder
  *
+ * @see #run()
  * @author creativitRy
  */
 public class VideoEncoder {
@@ -83,8 +85,8 @@ public class VideoEncoder {
 			Map.Entry<Rational, BufferedImage> entry = iterator.next();
 			System.out.println(entry.getKey());
 			
-			long amount = (long) Math.ceil(entry.getKey().divide(properties.getFramerate()).getDouble()
-					- prev.getKey().divide(properties.getFramerate()).getDouble())
+			long amount = (long) Math.ceil(TimeUtils.timeToFrames(entry.getKey(), properties.getFramerate()).getDouble()
+					- TimeUtils.timeToFrames(prev.getKey(), properties.getFramerate()).getDouble())
 					+ currentFrame;
 			
 			// This is LIKELY not in YUV420P format, so we're going to convert it using some handy utilities.
