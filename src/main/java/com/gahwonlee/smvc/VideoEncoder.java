@@ -1,9 +1,29 @@
+/*
+ * SMVC
+ * Copyright (C) 2017 creativitRy
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.gahwonlee.smvc;
 
+import com.gahwonlee.smvc.utils.ImageUtil;
 import com.gahwonlee.smvc.utils.TimeUtils;
 import io.humble.video.*;
 import io.humble.video.awt.MediaPictureConverter;
 import io.humble.video.awt.MediaPictureConverterFactory;
+import org.apache.logging.log4j.LogManager;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -15,10 +35,11 @@ import java.util.TreeMap;
 /**
  * VideoEncoder
  *
- * @see #run()
  * @author creativitRy
+ * @see #run()
  */
 public class VideoEncoder {
+	
 	private final File file;
 	private final VideoProperties properties;
 	/**
@@ -26,11 +47,13 @@ public class VideoEncoder {
 	 * value = what image?
 	 */
 	private TreeMap<Rational, BufferedImage> frames;
+	private long currentFrame;
 	
 	public VideoEncoder(File file, TreeMap<Rational, BufferedImage> frames, VideoProperties properties) {
 		this.file = file;
 		this.frames = frames;
 		this.properties = properties;
+		currentFrame = 0;
 	}
 	
 	public void run() throws IOException, InterruptedException {
@@ -61,12 +84,11 @@ public class VideoEncoder {
 		// And open the muxer for business.
 		muxer.open(null, null);
 		
-		/* Next, we need to make sure we have the right MediaPicture format objects
-		  to encode data with. Java (and most on-screen graphics programs) use some
-		  variant of Red-Green-Blue image encoding (a.k.a. RGB or BGR). Most video
-		  codecs use some variant of YCrCb formatting. So we're going to have to
-		  convert. To do that, we'll introduce a MediaPictureConverter object later. object.
-		 */
+		// Next, we need to make sure we have the right MediaPicture format objects
+		//to encode data with. Java (and most on-screen graphics programs) use some
+		//variant of Red-Green-Blue image encoding (a.k.a. RGB or BGR). Most video
+		//codecs use some variant of YCrCb formatting. So we're going to have to
+		//convert. To do that, we'll introduce a MediaPictureConverter object later
 		MediaPictureConverter converter = null;
 		final MediaPicture picture = MediaPicture.make(
 				encoder.getWidth(),
@@ -76,11 +98,12 @@ public class VideoEncoder {
 		
 		// ending
 		frames.put(properties.getDuration(), frames.lastEntry().getValue());
+		
 		// We're going to encode and then write out any resulting packets.
 		final MediaPacket packet = MediaPacket.make();
 		Iterator<Map.Entry<Rational, BufferedImage>> iterator = frames.entrySet().iterator();
 		Map.Entry<Rational, BufferedImage> prev = iterator.next();
-		long currentFrame = 0;
+		currentFrame = 0;
 		while (iterator.hasNext()) {
 			Map.Entry<Rational, BufferedImage> entry = iterator.next();
 			System.out.println(entry.getKey());
@@ -90,17 +113,19 @@ public class VideoEncoder {
 					+ currentFrame;
 			
 			// This is LIKELY not in YUV420P format, so we're going to convert it using some handy utilities.
-			BufferedImage image = convertToType(prev.getValue(), BufferedImage.TYPE_3BYTE_BGR);
+			BufferedImage image = ImageUtil.convertToType(prev.getValue(), BufferedImage.TYPE_3BYTE_BGR);
 			if (converter == null)
 				converter = MediaPictureConverterFactory.createConverter(image, picture);
 			
-			for (; currentFrame < amount; currentFrame++) {
+			// write frames
+			while (currentFrame < amount) {
 				converter.toPicture(picture, image, currentFrame);
 				do {
 					encoder.encode(packet, picture);
 					if (packet.isComplete())
 						muxer.write(packet, false);
 				} while (packet.isComplete());
+				currentFrame++;
 			}
 			
 			prev = entry;
@@ -118,39 +143,26 @@ public class VideoEncoder {
 		//Finally, let's clean up after ourselves.
 		muxer.close();
 		
-		System.out.println("Done");
+		LogManager.getLogger().debug("Done");
 	}
 	
 	/**
-	 * Convert a {@link BufferedImage} of any type, to {@link BufferedImage} of a
-	 * specified type. If the source image is the same type as the target type,
-	 * then original image is returned, otherwise new image of the correct type is
-	 * created and the content of the source image is copied into the new image.
+	 * Get progress
 	 *
-	 * @param sourceImage the image to be converted
-	 * @param targetType  the desired BufferedImage type
-	 * @return a BufferedImage of the specifed target type.
-	 * @see BufferedImage
+	 * @return current frame being processed
+	 * @see #getTotalFrames()
 	 */
+	public long getFramesLeft() {
+		return currentFrame;
+	}
 	
-	public static BufferedImage convertToType(BufferedImage sourceImage,
-	                                          int targetType) {
-		BufferedImage image;
-		
-		// if the source image is already the target type, return the source image
-		
-		if (sourceImage.getType() == targetType)
-			image = sourceImage;
-			
-			// otherwise create a new image of the target type and draw the new
-			// image
-		
-		else {
-			image = new BufferedImage(sourceImage.getWidth(),
-					sourceImage.getHeight(), targetType);
-			image.getGraphics().drawImage(sourceImage, 0, 0, null);
-		}
-		
-		return image;
+	/**
+	 * Get total number of frames to process
+	 *
+	 * @return total number of frames to process
+	 * @see #getFramesLeft()
+	 */
+	public long getTotalFrames() {
+		return (long) Math.ceil(TimeUtils.timeToFrames(properties.getDuration(), properties.getFramerate()).getDouble());
 	}
 }
