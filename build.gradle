@@ -20,13 +20,11 @@ buildscript {
 	repositories {
 		mavenLocal()
 		mavenCentral()
-		maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-		jcenter()
 	}
 }
 
 group 'com.gahwonlee.smvc'
-version '0.0-SNAPSHOT'
+version '0.0'
 
 apply plugin: 'java'
 
@@ -58,7 +56,7 @@ task dist(type: Jar) {
 	from files(sourceSets.main.output.classesDir)
 	from files(sourceSets.main.output.resourcesDir)
 	from { configurations.compile.collect { zipTree(it) } }
-	
+
 	manifest {
 		attributes 'Main-Class': project.mainClassName
 	}
