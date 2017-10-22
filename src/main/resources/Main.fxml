@@ -33,9 +33,9 @@
 
 
 <StackPane prefHeight="540.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gahwonlee.smvc.Controller">
-   <children>
-      <VBox>
-         <children>
+	<children>
+		<VBox>
+			<children>
 				<VBox minHeight="-Infinity">
 					<children>
 						<MenuBar>
@@ -64,15 +64,15 @@
 						</ToolBar>
 					</children>
 				</VBox>
-            <StackPane VBox.vgrow="ALWAYS">
-               <children>
+				<StackPane VBox.vgrow="ALWAYS">
+					<children>
 						<ScrollPane fx:id="scrollPane" fitToWidth="true" minHeight="0.0" minWidth="0.0">
 						 <content>
 							<FlowPane fx:id="imagePane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
 						 </content>
 						</ScrollPane>
-               </children>
-            </StackPane>
+					</children>
+				</StackPane>
 				<ToolBar minHeight="-Infinity">
 					<items>
 						<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
@@ -80,7 +80,7 @@
 						<Separator orientation="VERTICAL" />
 					</items>
 				</ToolBar>
-         </children>
-      </VBox>
-   </children>
+			</children>
+		</VBox>
+	</children>
 </StackPane>
