@@ -23,6 +23,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import jdk.nashorn.internal.parser.JSONParser;
@@ -54,7 +55,7 @@ public class Smvc extends Application {
 		launch(args);
 	}
 	
-	private AnchorPane mainGui;
+	private StackPane mainGui;
 	private Stage primaryStage;
 	
 	@Override
