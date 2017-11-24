@@ -46,6 +46,7 @@ public class Smvc extends Application {
 	private static Logger logger = LogManager.getLogger();
 	
 	private static Smvc INSTANCE;
+	private Controller controller;
 	
 	public static Smvc getInstance() {
 		return INSTANCE;
@@ -67,6 +68,8 @@ public class Smvc extends Application {
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(getClass().getResource("/Main.fxml"));
 			mainGui = loader.load();
+			controller = loader.getController();
+			controller.init();
 			
 			// Show the scene containing the root layout.
 			Scene scene = new Scene(mainGui);
@@ -77,7 +80,7 @@ public class Smvc extends Application {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+		//todo https://github.com/artclarke/humble-video/blob/master/humble-video-demos/src/main/java/io/humble/video/demos/DecodeAndPlayAudio.java
 		
 //		FileChooser fileChooser = new FileChooser();
 //		fileChooser.setInitialDirectory(new File("C:\\Users\\creativitRy\\Documents\\minecraft\\maps\\_mymaps\\water\\processed"));

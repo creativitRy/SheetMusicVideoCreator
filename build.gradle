@@ -36,6 +36,7 @@ repositories {
 
 dependencies {
 //	compile "net.bramp.ffmpeg:ffmpeg:$ffmpegVersion"
+	
 	compile "io.humble:humble-video-all:$humbleVideoVersion"
 	compile "org.apache.logging.log4j:log4j-api:$log4jVersion"
 	compile "org.apache.logging.log4j:log4j-core:$log4jVersion"

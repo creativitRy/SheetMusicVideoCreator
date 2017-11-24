@@ -23,11 +23,18 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.input.ZoomEvent;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.File;
 import java.util.List;
@@ -42,6 +49,17 @@ public class Controller {
 	public FlowPane imagePane;
 	@FXML
 	public ScrollPane scrollPane;
+	
+	private boolean isCtrlDown;
+	private double scale;
+	private Scale scaleTransform;
+	
+	public void init() {
+		scale = 1;
+		scaleTransform = new Scale(scale, scale, 0, 0);
+		imagePane.getTransforms().add(scaleTransform);
+		ImageDisplayManager.getInstance().setImagePane(imagePane);
+	}
 	
 	@FXML
 	public void onAddImage(ActionEvent actionEvent) {
@@ -58,16 +76,43 @@ public class Controller {
 		if (files == null || files.isEmpty())
 			return;
 		
-//		scrollPane.viewportBoundsProperty().addListener((arg0, arg1, arg2) -> {
-//			Node content = scrollPane.getContent();
-//			scrollPane.setFitToWidth(content.prefWidth(-1) < arg2.getWidth());
-//			scrollPane.setFitToHeight(content.prefHeight(-1) < arg2.getHeight());
-//		});
-		ImageDisplayManager.getInstance().setImagePane(imagePane);
+		//		scrollPane.viewportBoundsProperty().addListener((arg0, arg1, arg2) -> {
+		//			Node content = scrollPane.getContent();
+		//			scrollPane.setFitToWidth(content.prefWidth(-1) < arg2.getWidth());
+		//			scrollPane.setFitToHeight(content.prefHeight(-1) < arg2.getHeight());
+		//		});
 		
 		for (File file : files) {
 			ImageDisplayManager.getInstance().add(new Image(file.toURI().toString()));
 		}
 		
+	}
+	
+	@FXML
+	public void onKeyPressed(KeyEvent keyEvent) {
+		if (keyEvent.getCode() == KeyCode.CONTROL) {
+			isCtrlDown = true;
+		}
+	}
+	
+	@FXML
+	public void onKeyReleased(KeyEvent keyEvent) {
+		if (keyEvent.getCode() == KeyCode.CONTROL)
+			isCtrlDown = false;
+	}
+	
+	@FXML
+	public void onScroll(ScrollEvent scrollEvent) {
+		if (isCtrlDown) {
+			if (scrollEvent.getDeltaY() > 0)
+				scale = Math.max(0.1, Math.min(scale * 1.1, 16));
+			else if (scrollEvent.getDeltaY() < 0)
+				scale = Math.max(0.1, Math.min(scale / 1.1, 16));
+			scaleTransform.setX(scale);
+			scaleTransform.setY(scale);
+			scaleTransform.setPivotX(scrollPane.getHvalue());
+			scaleTransform.setPivotY(scrollPane.getVvalue());
+			scrollEvent.consume();
+		}
 	}
 }
