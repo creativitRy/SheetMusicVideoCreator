@@ -20,5 +20,6 @@
     <orderEntry type="library" name="Gradle: io.humble:humble-video-arch-x86_64-w64-mingw32:0.2.1" level="project" />
     <orderEntry type="library" name="Gradle: io.humble:humble-video-noarch:0.2.1" level="project" />
     <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.7.5" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.pdfbox:pdfbox:2.0.8" level="project" />
   </component>
 </module>

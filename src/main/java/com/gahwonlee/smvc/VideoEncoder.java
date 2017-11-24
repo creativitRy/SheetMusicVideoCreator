@@ -38,7 +38,7 @@ import java.util.TreeMap;
  * @author creativitRy
  * @see #run()
  */
-public class VideoEncoder {
+public class VideoEncoder implements Runnable {
 	
 	private final File file;
 	private final VideoProperties properties;
@@ -56,7 +56,8 @@ public class VideoEncoder {
 		currentFrame = 0;
 	}
 	
-	public void run() throws IOException, InterruptedException {
+	@Override
+	public void run() {
 		Muxer muxer = Muxer.make(file.getAbsolutePath(), null, null);
 		
 		//decide what type of codec to use to encode video. Muxers have limited sets of codecs they can use.
@@ -82,7 +83,11 @@ public class VideoEncoder {
 		muxer.addNewStream(encoder);
 		
 		// And open the muxer for business.
-		muxer.open(null, null);
+		try {
+			muxer.open(null, null);
+		} catch (InterruptedException | IOException e) {
+			throw new IllegalStateException(e);
+		}
 		
 		// Next, we need to make sure we have the right MediaPicture format objects
 		//to encode data with. Java (and most on-screen graphics programs) use some
